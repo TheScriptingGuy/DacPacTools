@@ -1,0 +1,26 @@
+{
+  "name": "pl_foreach",
+  "properties": {
+    "activities": [
+      {
+        "name": "for_each_month",
+        "type": "ForEach",
+        "typeProperties": {
+          "activities": [
+            {
+              "name": "run_script",
+              "type": "Script",
+              "linkedServiceName": {"referenceName": "AzureSqlDatabase1", "type": "LinkedServiceReference"},
+              "typeProperties": {
+                "scripts": [
+                  {"type": "Query", "text": "TRUNCATE TABLE dbo.Stage"},
+                  {"type": "Query", "text": "INSERT INTO dbo.Stage SELECT * FROM dbo.Source"}
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lineage — {{ root }}</title>
+  <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+  <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
+    #layout { display: grid; grid-template-columns: 1fr 380px; height: 100vh; }
+    #graph { border-right: 1px solid #333; background: #111; }
+    #side { padding: 16px 20px; overflow-y: auto; background: #1b1b1b; color: #eee; }
+    header { padding: 10px 16px; background: #222; color: #eee; display: flex; gap: 16px; align-items: center; }
+    header .root { font-weight: 600; }
+    header .warn { color: #f0a020; }
+    h2 { font-size: 15px; margin: 12px 0 4px; color: #ddd; }
+    table { border-collapse: collapse; width: 100%; font-size: 12px; }
+    th, td { text-align: left; padding: 3px 6px; border-bottom: 1px solid #333; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; margin-left: 8px; }
+    .badge.PROCEDURE { background: #4b6cff; }
+    .badge.VIEW { background: #2aa198; }
+    .badge.TABLE { background: #859900; }
+    .badge.SYNONYM { background: #b58900; }
+    .badge.EXTERNAL_TABLE { background: #cb4b16; }
+    .badge.TABLE_VALUED_FUNCTION,.badge.SCALAR_FUNCTION { background: #6c71c4; }
+    .badge.UNKNOWN { background: #586e75; }
+    .not-direct { color: #f0a020; }
+    code { background: #000; color: #7fc; padding: 1px 4px; border-radius: 3px; }
+    tr.pred-JOIN_ON      td:first-child { color: #6cf; }
+    tr.pred-WHERE        td:first-child { color: #f88; }
+    tr.pred-GROUP_BY     td:first-child { color: #cfa; }
+    tr.pred-HAVING       td:first-child { color: #fc8; }
+    tr.pred-ORDER_BY     td:first-child { color: #ccc; }
+    tr.pred-PARTITION_BY td:first-child { color: #c9f; }
+  </style>
+</head>
+<body>
+  <div id="layout">
+    <div>
+      <header>
+        <div class="root">Root: {{ root }}</div>
+        <div>Nodes: {{ node_count }}</div>
+        <div>Edges: {{ edge_count }}</div>
+        {% if warnings %}<div class="warn">Warnings: {{ warnings|length }}</div>{% endif %}
+      </header>
+      <div id="graph" style="height: calc(100vh - 44px);"></div>
+    </div>
+    <aside id="side">
+      <h1 style="font-size: 15px; margin: 0 0 10px;">Details</h1>
+      <div id="detail">Click a node to inspect columns and mappings.</div>
+      {% if warnings %}
+        <h2>Warnings</h2>
+        <ul>{% for w in warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+      {% endif %}
+    </aside>
+  </div>
+
+  <script id="graph-data" type="application/json">{{ data_json|safe }}</script>
+  <script>
+    (function () {
+      const data = JSON.parse(document.getElementById('graph-data').textContent);
+      const elements = [];
+      for (const n of data.nodes) {
+        elements.push({
+          data: {
+            id: n.ref,
+            label: n.ref + '\n(' + n.objectType + ')',
+            objectType: n.objectType,
+            node: n
+          }
+        });
+      }
+      for (const e of data.edges) {
+        elements.push({ data: { id: e.from + '->' + e.to, source: e.from, target: e.to, kind: e.kind } });
+      }
+
+      const cy = cytoscape({
+        container: document.getElementById('graph'),
+        elements,
+        style: [
+          { selector: 'node', style: {
+              'label': 'data(label)',
+              'text-wrap': 'wrap', 'text-valign': 'center', 'text-halign': 'center',
+              'color': '#fff', 'font-size': 11, 'font-family': 'system-ui',
+              'text-outline-width': 1, 'text-outline-color': '#000',
+              'background-color': '#586e75',
+              'width': 'label', 'height': 'label',
+              'padding': '10px', 'shape': 'round-rectangle'
+          }},
+          { selector: 'node[objectType = "PROCEDURE"]', style: { 'background-color': '#4b6cff' }},
+          { selector: 'node[objectType = "VIEW"]',      style: { 'background-color': '#2aa198' }},
+          { selector: 'node[objectType = "TABLE"]',     style: { 'background-color': '#859900' }},
+          { selector: 'node[objectType = "SYNONYM"]',   style: { 'background-color': '#b58900' }},
+          { selector: 'node[objectType = "EXTERNAL_TABLE"]', style: { 'background-color': '#cb4b16' }},
+          { selector: 'node[objectType = "TABLE_VALUED_FUNCTION"]', style: { 'background-color': '#6c71c4' }},
+          { selector: 'node[objectType = "SCALAR_FUNCTION"]', style: { 'background-color': '#6c71c4' }},
+          { selector: 'edge', style: {
+              'width': 1.5, 'line-color': '#556', 'target-arrow-color': '#889',
+              'target-arrow-shape': 'triangle', 'curve-style': 'bezier'
+          }},
+          { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#f0a020' }},
+        ],
+        layout: { name: 'dagre', rankDir: 'LR', nodeSep: 30, rankSep: 80 },
+        wheelSensitivity: 0.2
+      });
+
+      const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      cy.on('tap', 'node', (evt) => {
+        const n = evt.target.data('node');
+        const cols = n.columns.map(c => '<tr><td>' + (c.ordinal ?? '') + '</td><td>' + esc(c.name) + '</td><td>' + esc(c.dataType || '') + '</td></tr>').join('');
+        const maps = n.columnMappings.map(m => {
+          const src = m.sources.map(s => esc(s.object + '.' + s.column)).join(', ') || '<em>none</em>';
+          const cls = m.isDirect ? '' : ' class="not-direct"';
+          return '<tr' + cls + '><td>' + esc(m.target.column) + '</td><td>' + src + '</td><td>' + (m.isDirect ? 'yes' : 'no') + '</td><td><code>' + esc(m.expression || '') + '</code></td></tr>';
+        }).join('');
+        const preds = (n.predicates || []).map(p => {
+          const cols = (p.columns || []).map(c => esc(c.object + '.' + c.column)).join(', ') || '<em>none</em>';
+          const partner = p.partner ? esc(p.partner.object + '.' + p.partner.column) : '';
+          return '<tr class="pred-' + p.kind + '"><td>' + p.kind + '</td><td>' + cols + '</td><td>' + partner + '</td><td><code>' + esc(p.expression || '') + '</code></td></tr>';
+        }).join('');
+        let synapseHtml = '';
+        if (n.synapse) {
+          const s = n.synapse;
+          const distCols = (s.distributionColumns || []).join(', ');
+          const idxCols = (s.indexColumns || []).join(', ');
+          synapseHtml =
+            '<h2>Synapse table (' + esc(s.source) + ')</h2>' +
+            '<table><tbody>' +
+              '<tr><td>Distribution</td><td>' + esc(s.distributionKind) + (distCols ? ' (' + esc(distCols) + ')' : '') + '</td></tr>' +
+              '<tr><td>Index</td><td>' + esc(s.indexKind) + (idxCols ? ' (' + esc(idxCols) + ')' : '') + '</td></tr>' +
+            '</tbody></table>';
+        }
+        document.getElementById('detail').innerHTML =
+          '<h2>' + esc(n.ref) + ' <span class="badge ' + esc(n.objectType) + '">' + esc(n.objectType) + '</span></h2>' +
+          synapseHtml +
+          '<h2>Columns</h2><table><thead><tr><th>#</th><th>Name</th><th>Type</th></tr></thead><tbody>' + (cols || '<tr><td colspan=3><em>none</em></td></tr>') + '</tbody></table>' +
+          '<h2>Column mappings</h2><table><thead><tr><th>Target</th><th>Sources</th><th>Direct</th><th>Expression</th></tr></thead><tbody>' + (maps || '<tr><td colspan=4><em>none</em></td></tr>') + '</tbody></table>' +
+          '<h2>Filters &amp; Joins</h2><table><thead><tr><th>Kind</th><th>Columns</th><th>Partner</th><th>Expression</th></tr></thead><tbody>' + (preds || '<tr><td colspan=4><em>none</em></td></tr>') + '</tbody></table>';
+      });
+    })();
+  </script>
+</body>
+</html>

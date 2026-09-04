@@ -1,0 +1,31 @@
+{
+  "name": "pl_extract",
+  "properties": {
+    "activities": [
+      {
+        "name": "check_source",
+        "type": "Lookup",
+        "linkedServiceName": {"referenceName": "AzureSqlDatabase1", "type": "LinkedServiceReference"},
+        "typeProperties": {
+          "source": {"type": "AzureSqlSource", "sqlReaderQuery": "SELECT COUNT(*) AS c FROM dbo.SourceTable"}
+        }
+      },
+      {
+        "name": "copy_query",
+        "type": "Copy",
+        "linkedServiceName": {"referenceName": "AzureSqlDatabase1", "type": "LinkedServiceReference"},
+        "typeProperties": {
+          "source": {"type": "SqlSource", "sqlReaderQuery": "SELECT a, b FROM dbo.SourceA WHERE a > 0"}
+        }
+      },
+      {
+        "name": "copy_table",
+        "type": "Copy",
+        "linkedServiceName": {"referenceName": "AzureSqlDatabase1", "type": "LinkedServiceReference"},
+        "typeProperties": {
+          "source": {"type": "SqlSource"}
+        }
+      }
+    ]
+  }
+}

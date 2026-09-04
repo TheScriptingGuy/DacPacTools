@@ -1,0 +1,28 @@
+{
+  "name": "pl_loadFact",
+  "properties": {
+    "activities": [
+      {
+        "name": "trunc_stage",
+        "type": "SqlServerStoredProcedure",
+        "linkedServiceName": {"referenceName": "AzureSqlDatabase1", "type": "LinkedServiceReference"},
+        "typeProperties": {
+          "storedProcedureName": "[dbo].[usp_TruncStage]"
+        }
+      },
+      {
+        "name": "load_fact",
+        "type": "SqlServerStoredProcedure",
+        "dependsOn": [{"activity": "trunc_stage", "dependencyConditions": ["Succeeded"]}],
+        "linkedServiceName": {"referenceName": "AzureSqlDatabase1", "type": "LinkedServiceReference"},
+        "typeProperties": {
+          "storedProcedureName": "[dbo].[usp_LoadFact]",
+          "storedProcedureParameters": {
+            "batchDate": {"value": "2025-01-01", "type": "String"},
+            "isFull": {"value": 1, "type": "Int32"}
+          }
+        }
+      }
+    ]
+  }
+}

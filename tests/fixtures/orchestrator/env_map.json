@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "mappings": {
+    "AzureSqlDatabase1": {"kind": "dacpac", "path": "./sample.dacpac"},
+    "mssql_default": {"kind": "connection", "name": "warehouse"},
+    "mssql_warehouse": {"kind": "connection", "name": "warehouse"}
+  }
+}

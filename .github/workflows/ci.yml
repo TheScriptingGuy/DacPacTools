@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install sqlpackage (dotnet global tool)
+        run: dotnet tool install --global microsoft.sqlpackage
+        shell: pwsh
+
+      - name: uv sync
+        run: uv sync --frozen
+
+      - name: Prefetch DacFx / ScriptDom (populates .tools cache)
+        run: uv run python -m dacpactools tools install-dacfx
+        shell: pwsh
+
+      - name: Run unit tests
+        run: uv run python -m pytest tests/unit -q
+        shell: pwsh
+
+      - name: Run dotnet-marked integration tests
+        run: uv run python -m pytest tests/integration -q -m dotnet
+        shell: pwsh
+
+      - name: Lint (ruff)
+        run: uv run python -m ruff check src tests
+        shell: pwsh
+
+      - name: Type-check (mypy)
+        run: uv run python -m mypy src/dacpactools
+        shell: pwsh
+        continue-on-error: true

@@ -6,9 +6,13 @@ import click
 
 from dacpactools import __version__
 from dacpactools.presentation.commands.column_usage import column_usage as column_usage_cmd
+from dacpactools.presentation.commands.drop_script import drop_script as drop_script_cmd
 from dacpactools.presentation.commands.joins import joins as joins_cmd
 from dacpactools.presentation.commands.lineage import lineage as lineage_cmd
 from dacpactools.presentation.commands.orchestrator import orchestrator as orchestrator_cmd
+from dacpactools.presentation.commands.recommend_index_stats import (
+    recommend_index_stats as recommend_index_stats_cmd,
+)
 from dacpactools.presentation.commands.tools import tools_group
 from dacpactools.presentation.composition import Container, build_container
 from dacpactools.presentation.settings import DotnetRuntime, Settings
@@ -90,6 +94,8 @@ main.add_command(lineage_cmd)
 main.add_command(orchestrator_cmd)
 main.add_command(joins_cmd)
 main.add_command(column_usage_cmd)
+main.add_command(drop_script_cmd)
+main.add_command(recommend_index_stats_cmd)
 
 
 if __name__ == "__main__":

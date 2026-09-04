@@ -69,6 +69,33 @@ Outputs:
   `dacpactools_tree` facet holding the full nested lineage graph
 - `out/lineage_<object>.html` — self-contained interactive graph (opens in browser)
 
+## Drop orphans not in dacpac
+
+Emit a review-first `.sql` script that drops every object present in the target
+DB but missing from the dacpac. Every statement is `DROP <TYPE> IF EXISTS ...`
+(idempotent, no transaction), ordered so dependents drop before their
+dependencies (synonyms → external tables → views → procedures → functions →
+tables).
+
+```bash
+uv run python -m dacpactools drop-script `
+    --dacpac ./Datafundament.dacpac `
+    --connection prod `
+    --out ./out
+```
+
+Restrict the diff to specific schemas (comma-separated, case-insensitive):
+
+```bash
+uv run python -m dacpactools drop-script `
+    --dacpac ./Datafundament.dacpac `
+    --connection prod `
+    --out ./out `
+    --schemas dbo,stg
+```
+
+Output: `out/drop_script_<server>__<database>_<UTC-timestamp>.sql`.
+
 ## Belastingdienst / WDAC note
 
 Pip-generated `.exe` shims under `.venv\Scripts\` are blocked by corporate

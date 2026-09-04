@@ -16,6 +16,12 @@ if TYPE_CHECKING:
         FindColumnUsageUseCase,
     )
     from dacpactools.application.use_cases.find_joins import FindJoinsUseCase
+    from dacpactools.application.use_cases.generate_drop_script import (
+        GenerateDropScriptUseCase,
+    )
+    from dacpactools.application.use_cases.recommend_index_stats import (
+        RecommendIndexStatsUseCase,
+    )
 
 
 @dataclass(frozen=True)
@@ -127,6 +133,56 @@ def build_find_column_usage_use_case(settings: Settings) -> "FindColumnUsageUseC
     initialize(settings)
     return FindColumnUsageUseCase(
         dacpac=DacFxDacPacService(), parser=ScriptDomParserService()
+    )
+
+
+def build_drop_script_use_case(settings: Settings) -> "GenerateDropScriptUseCase":
+    from dacpactools.application.use_cases.generate_drop_script import (  # noqa: PLC0415
+        GenerateDropScriptUseCase,
+    )
+    from dacpactools.infrastructure.azure.sql_client_service import (  # noqa: PLC0415
+        SqlClientMetadataService,
+    )
+    from dacpactools.infrastructure.azure.token_provider import (  # noqa: PLC0415
+        DefaultAzureCredentialTokenProvider,
+    )
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
+
+    initialize(settings)
+    return GenerateDropScriptUseCase(
+        dacpac=DacFxDacPacService(),
+        sql_meta=SqlClientMetadataService(),
+        token_provider=DefaultAzureCredentialTokenProvider(),
+        clock=SystemClock(),
+    )
+
+
+def build_recommend_index_stats_use_case(
+    settings: Settings,
+) -> "RecommendIndexStatsUseCase":
+    from dacpactools.application.use_cases.recommend_index_stats import (  # noqa: PLC0415
+        RecommendIndexStatsUseCase,
+    )
+    from dacpactools.infrastructure.azure.sql_client_service import (  # noqa: PLC0415
+        SqlClientMetadataService,
+    )
+    from dacpactools.infrastructure.azure.token_provider import (  # noqa: PLC0415
+        DefaultAzureCredentialTokenProvider,
+    )
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
+    from dacpactools.infrastructure.scriptdom.parser_service import (  # noqa: PLC0415
+        ScriptDomParserService,
+    )
+
+    initialize(settings)
+    return RecommendIndexStatsUseCase(
+        dacpac=DacFxDacPacService(),
+        sql_meta=SqlClientMetadataService(),
+        parser=ScriptDomParserService(),
+        token_provider=DefaultAzureCredentialTokenProvider(),
+        clock=SystemClock(),
     )
 
 

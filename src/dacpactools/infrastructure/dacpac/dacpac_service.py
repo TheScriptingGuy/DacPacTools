@@ -71,6 +71,30 @@ class DacFxDacPacService:
         SqlPackageExtractor().extract(connection, token, target)
         return self.load(target)
 
+    def list_all_objects(self, handle: DacPacHandle) -> Iterable[TSqlObjectHandle]:
+        _, _, DacQueryScopes, _ = _clr_types()
+        for ot in (
+            ObjectType.TABLE,
+            ObjectType.VIEW,
+            ObjectType.PROCEDURE,
+            ObjectType.SCALAR_FUNCTION,
+            ObjectType.TABLE_VALUED_FUNCTION,
+            ObjectType.SYNONYM,
+            ObjectType.EXTERNAL_TABLE,
+        ):
+            ms = _model_schema_for(ot)
+            if ms is None:
+                continue
+            for obj in handle.model.GetObjects(DacQueryScopes.UserDefined, ms):
+                raw = to_object_ref(obj)
+                resolved = ObjectRef(
+                    database=raw.database,
+                    schema=raw.schema_name,
+                    name=raw.name,
+                    object_type=ot,
+                )
+                yield TSqlObjectHandle(ref=resolved, tsql_object=obj)
+
     def find_object(self, handle: DacPacHandle, ref: ObjectRef) -> TSqlObjectHandle | None:
         _, ModelSchema, DacQueryScopes, ObjectIdentifier = _clr_types()
         candidates = [ref.object_type] if ref.object_type is not ObjectType.UNKNOWN else [

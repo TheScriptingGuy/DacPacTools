@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import zipfile
 from pathlib import Path
+from typing import Self
 
 import httpx
 
@@ -26,7 +27,7 @@ class NugetFetcher:
     def close(self) -> None:
         self._client.close()
 
-    def __enter__(self) -> "NugetFetcher":
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *args: object) -> None:
@@ -64,7 +65,7 @@ class NugetFetcher:
         with zipfile.ZipFile(nupkg_path) as zf:
             for name in zf.namelist():
                 # skip signing artefacts and _rels
-                if name.startswith("_rels/") or name.startswith("package/") or name.startswith("[Content_Types].xml") or name == ".signature.p7s":
+                if name.startswith(("_rels/", "package/", "[Content_Types].xml")) or name == ".signature.p7s":
                     continue
                 dest = target / name
                 if name.endswith("/"):

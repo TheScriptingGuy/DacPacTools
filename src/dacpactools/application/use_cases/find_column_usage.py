@@ -95,14 +95,14 @@ class FindColumnUsageUseCase:
             return self.dacpac.load_from_live(src.connection, request.output_dir / ".tmp")
         raise TypeError(f"unsupported source: {type(src).__name__}")
 
-    def _enumerate(self, handle: DacPacHandle, object_type: ObjectType):  # noqa: ANN202
-        from dacpactools.application.ports._handles import (  # noqa: PLC0415
+    def _enumerate(self, handle: DacPacHandle, object_type: ObjectType):
+        from dacpactools.application.ports._handles import (
             TSqlObjectHandle,
         )
-        from dacpactools.infrastructure.dacpac.dacpac_service import (  # noqa: PLC0415
+        from dacpactools.infrastructure.dacpac.dacpac_service import (
             _clr_types,
         )
-        from dacpactools.infrastructure.dacpac.object_mapper import (  # noqa: PLC0415
+        from dacpactools.infrastructure.dacpac.object_mapper import (
             to_object_ref,
         )
 

@@ -41,14 +41,14 @@ def build_container(settings: Settings | None = None) -> Container:
     return Container(settings=settings)
 
 
-def build_lineage_use_case(settings: Settings) -> "BuildLineageUseCase":
+def build_lineage_use_case(settings: Settings) -> BuildLineageUseCase:
     """Composition root for the lineage use case. Initialises CLR + all adapters."""
-    from dacpactools.application.use_cases.build_lineage import BuildLineageUseCase  # noqa: PLC0415
-    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
-    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
-    from dacpactools.infrastructure.scriptdom.parser_service import ScriptDomParserService  # noqa: PLC0415
-    from dacpactools.infrastructure.viz.cytoscape_renderer import CytoscapeHtmlRenderer  # noqa: PLC0415
-    from dacpactools.infrastructure.writers.openlineage_json_writer import (  # noqa: PLC0415
+    from dacpactools.application.use_cases.build_lineage import BuildLineageUseCase
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize
+    from dacpactools.infrastructure.scriptdom.parser_service import ScriptDomParserService
+    from dacpactools.infrastructure.viz.cytoscape_renderer import CytoscapeHtmlRenderer
+    from dacpactools.infrastructure.writers.openlineage_json_writer import (
         OpenLineageJsonWriter,
     )
 
@@ -65,26 +65,26 @@ def build_lineage_use_case(settings: Settings) -> "BuildLineageUseCase":
 
 def build_orchestrator_lineage_use_case(
     settings: Settings,
-) -> "BuildOrchestratorLineageUseCase":
+) -> BuildOrchestratorLineageUseCase:
     """Composition root for the orchestrator-lineage use case. Reuses the inner
     lineage use case (which performs CLR bootstrap)."""
-    from dacpactools.application.ports._handles import LiveConnection  # noqa: PLC0415
-    from dacpactools.application.use_cases.build_orchestrator_lineage import (  # noqa: PLC0415
+    from dacpactools.application.ports._handles import LiveConnection
+    from dacpactools.application.use_cases.build_orchestrator_lineage import (
         BuildOrchestratorLineageUseCase,
     )
-    from dacpactools.infrastructure.orchestrator.adf_artifact_reader import (  # noqa: PLC0415
+    from dacpactools.infrastructure.orchestrator.adf_artifact_reader import (
         AdfArtifactReader,
     )
-    from dacpactools.infrastructure.orchestrator.airflow_dag_reader import (  # noqa: PLC0415
+    from dacpactools.infrastructure.orchestrator.airflow_dag_reader import (
         AirflowDagReader,
     )
-    from dacpactools.infrastructure.orchestrator.cytoscape_orchestrator_renderer import (  # noqa: PLC0415
+    from dacpactools.infrastructure.orchestrator.cytoscape_orchestrator_renderer import (
         CytoscapeOrchestratorRenderer,
     )
-    from dacpactools.infrastructure.orchestrator.env_map_service import (  # noqa: PLC0415
+    from dacpactools.infrastructure.orchestrator.env_map_service import (
         JsonEnvMapService,
     )
-    from dacpactools.infrastructure.orchestrator.openlineage_orchestrator_writer import (  # noqa: PLC0415
+    from dacpactools.infrastructure.orchestrator.openlineage_orchestrator_writer import (
         OpenLineageOrchestratorWriter,
     )
 
@@ -110,23 +110,23 @@ def build_orchestrator_lineage_use_case(
     )
 
 
-def build_find_joins_use_case(settings: Settings) -> "FindJoinsUseCase":
-    from dacpactools.application.use_cases.find_joins import FindJoinsUseCase  # noqa: PLC0415
-    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
-    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
-    from dacpactools.infrastructure.scriptdom.parser_service import ScriptDomParserService  # noqa: PLC0415
+def build_find_joins_use_case(settings: Settings) -> FindJoinsUseCase:
+    from dacpactools.application.use_cases.find_joins import FindJoinsUseCase
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize
+    from dacpactools.infrastructure.scriptdom.parser_service import ScriptDomParserService
 
     initialize(settings)
     return FindJoinsUseCase(dacpac=DacFxDacPacService(), parser=ScriptDomParserService())
 
 
-def build_find_column_usage_use_case(settings: Settings) -> "FindColumnUsageUseCase":
-    from dacpactools.application.use_cases.find_column_usage import (  # noqa: PLC0415
+def build_find_column_usage_use_case(settings: Settings) -> FindColumnUsageUseCase:
+    from dacpactools.application.use_cases.find_column_usage import (
         FindColumnUsageUseCase,
     )
-    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
-    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
-    from dacpactools.infrastructure.scriptdom.parser_service import (  # noqa: PLC0415
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize
+    from dacpactools.infrastructure.scriptdom.parser_service import (
         ScriptDomParserService,
     )
 
@@ -136,18 +136,18 @@ def build_find_column_usage_use_case(settings: Settings) -> "FindColumnUsageUseC
     )
 
 
-def build_drop_script_use_case(settings: Settings) -> "GenerateDropScriptUseCase":
-    from dacpactools.application.use_cases.generate_drop_script import (  # noqa: PLC0415
+def build_drop_script_use_case(settings: Settings) -> GenerateDropScriptUseCase:
+    from dacpactools.application.use_cases.generate_drop_script import (
         GenerateDropScriptUseCase,
     )
-    from dacpactools.infrastructure.azure.sql_client_service import (  # noqa: PLC0415
+    from dacpactools.infrastructure.azure.sql_client_service import (
         SqlClientMetadataService,
     )
-    from dacpactools.infrastructure.azure.token_provider import (  # noqa: PLC0415
+    from dacpactools.infrastructure.azure.token_provider import (
         DefaultAzureCredentialTokenProvider,
     )
-    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
-    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize
 
     initialize(settings)
     return GenerateDropScriptUseCase(
@@ -160,19 +160,19 @@ def build_drop_script_use_case(settings: Settings) -> "GenerateDropScriptUseCase
 
 def build_recommend_index_stats_use_case(
     settings: Settings,
-) -> "RecommendIndexStatsUseCase":
-    from dacpactools.application.use_cases.recommend_index_stats import (  # noqa: PLC0415
+) -> RecommendIndexStatsUseCase:
+    from dacpactools.application.use_cases.recommend_index_stats import (
         RecommendIndexStatsUseCase,
     )
-    from dacpactools.infrastructure.azure.sql_client_service import (  # noqa: PLC0415
+    from dacpactools.infrastructure.azure.sql_client_service import (
         SqlClientMetadataService,
     )
-    from dacpactools.infrastructure.azure.token_provider import (  # noqa: PLC0415
+    from dacpactools.infrastructure.azure.token_provider import (
         DefaultAzureCredentialTokenProvider,
     )
-    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService  # noqa: PLC0415
-    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize  # noqa: PLC0415
-    from dacpactools.infrastructure.scriptdom.parser_service import (  # noqa: PLC0415
+    from dacpactools.infrastructure.dacpac.dacpac_service import DacFxDacPacService
+    from dacpactools.infrastructure.dotnet.clr_bootstrap import initialize
+    from dacpactools.infrastructure.scriptdom.parser_service import (
         ScriptDomParserService,
     )
 

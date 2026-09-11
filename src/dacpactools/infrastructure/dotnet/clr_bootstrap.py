@@ -52,7 +52,7 @@ def initialize(settings: Settings) -> RuntimeInfo:
 
     resolved = resolve_all(settings)
     rt = resolved.runtime
-    from pythonnet import load  # noqa: PLC0415
+    from pythonnet import load
 
     if rt == "coreclr":
         cfg = _write_coreclr_runtimeconfig()
@@ -61,9 +61,8 @@ def initialize(settings: Settings) -> RuntimeInfo:
         load("netfx")
     log.info("clr loaded", runtime=rt)
 
-    import clr  # noqa: PLC0415  (pythonnet-side import)
-    import System  # noqa: F401, PLC0415
-    from System.Reflection import Assembly  # noqa: PLC0415
+    import clr
+    import System  # noqa: F401
 
     added_dirs: set[str] = set()
 
@@ -105,9 +104,8 @@ def initialize(settings: Settings) -> RuntimeInfo:
 
 def _register_assembly_resolve(resolved: ResolvedAssemblies) -> None:
     """Redirect transitive net472 dependencies to the same nuget cache root."""
-    import System  # noqa: PLC0415
-    from System import AppDomain  # noqa: PLC0415
-    from System.Reflection import Assembly  # noqa: PLC0415
+    from System import AppDomain
+    from System.Reflection import Assembly
 
     search_dirs = {
         Path(str(resolved.dacfx)).parent,

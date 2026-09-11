@@ -18,8 +18,8 @@ def clr_initialized() -> None:
 
 
 @pytest.fixture
-def tsql_model(clr_initialized: None) -> Any:  # noqa: ARG001
-    from Microsoft.SqlServer.Dac.Model import (  # type: ignore  # noqa: PLC0415
+def tsql_model(clr_initialized: None) -> Any:
+    from Microsoft.SqlServer.Dac.Model import (  # type: ignore
         SqlServerVersion,
         TSqlModel,
         TSqlModelOptions,
@@ -29,5 +29,5 @@ def tsql_model(clr_initialized: None) -> Any:  # noqa: ARG001
     yield model
     try:
         model.Dispose()
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001, S110
         pass

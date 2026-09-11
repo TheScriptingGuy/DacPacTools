@@ -30,8 +30,8 @@ def test_autodetect_uses_cached_net8_when_present(
     (cache / "Microsoft.SqlServer.Dac.dll").write_bytes(b"stub")
 
     monkeypatch.setattr(path_probes, "has_dotnet_8", lambda: False)
-    monkeypatch.setattr(path_probes, "probe_ssdt_dacfx", lambda: [])
-    monkeypatch.setattr(path_probes, "probe_sqlserver_dac_bin", lambda: [])
+    monkeypatch.setattr(path_probes, "probe_ssdt_dacfx", list)
+    monkeypatch.setattr(path_probes, "probe_sqlserver_dac_bin", list)
 
     assert assembly_loader.autodetect_runtime(settings) == "coreclr"
 
@@ -41,7 +41,7 @@ def test_autodetect_falls_back_to_netfx_when_ssdt_present(
 ) -> None:
     monkeypatch.setattr(path_probes, "has_dotnet_8", lambda: False)
     monkeypatch.setattr(path_probes, "probe_ssdt_dacfx", lambda: [Path("C:/fake/dac.dll")])
-    monkeypatch.setattr(path_probes, "probe_sqlserver_dac_bin", lambda: [])
+    monkeypatch.setattr(path_probes, "probe_sqlserver_dac_bin", list)
     assert assembly_loader.autodetect_runtime(settings) == "netfx"
 
 
@@ -49,8 +49,8 @@ def test_autodetect_default_netfx_when_nothing(
     settings: Settings, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(path_probes, "has_dotnet_8", lambda: False)
-    monkeypatch.setattr(path_probes, "probe_ssdt_dacfx", lambda: [])
-    monkeypatch.setattr(path_probes, "probe_sqlserver_dac_bin", lambda: [])
+    monkeypatch.setattr(path_probes, "probe_ssdt_dacfx", list)
+    monkeypatch.setattr(path_probes, "probe_sqlserver_dac_bin", list)
     assert assembly_loader.autodetect_runtime(settings) == "netfx"
 
 

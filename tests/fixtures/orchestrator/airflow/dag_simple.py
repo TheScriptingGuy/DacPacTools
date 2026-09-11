@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from airflow import DAG
 from airflow.providers.microsoft.mssql.operators.mssql import MsSqlOperator
 
-with DAG("dag_simple", start_date=datetime(2025, 1, 1), catchup=False) as dag:
+with DAG("dag_simple", start_date=datetime(2025, 1, 1, tzinfo=UTC), catchup=False) as dag:
     t1 = MsSqlOperator(
         task_id="load_staging",
         mssql_conn_id="mssql_default",

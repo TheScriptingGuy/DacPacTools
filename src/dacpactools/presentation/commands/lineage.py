@@ -97,7 +97,7 @@ def lineage(
     except UnresolvableObject as e:
         click.echo(f"error: {e}", err=True)
         sys.exit(3)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         log.exception("lineage failed", err=str(e))
         click.echo(f"error: {type(e).__name__}: {e}", err=True)
         sys.exit(1)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -14,7 +14,7 @@ from dacpactools.infrastructure.sqlpackage.extractor import (
 
 
 def _tok() -> AccessToken:
-    return AccessToken(token="abc.def.ghi", expires_on=datetime.now(timezone.utc))
+    return AccessToken(token="abc.def.ghi", expires_on=datetime.now(UTC))
 
 
 def _conn() -> LiveConnection:
@@ -49,6 +49,5 @@ def test_extract_shells_out_with_access_token(tmp_path: Path) -> None:
 def test_extract_nonzero_returns_raises(tmp_path: Path) -> None:
     ex = SqlPackageExtractor(sqlpackage_path=Path("C:/fake/sqlpackage.exe"))
     fake = MagicMock(returncode=1, stdout="", stderr="auth failed")
-    with patch("subprocess.run", return_value=fake):
-        with pytest.raises(SqlPackageError, match="exit=1"):
-            ex.extract(_conn(), _tok(), tmp_path / "x.dacpac")
+    with patch("subprocess.run", return_value=fake), pytest.raises(SqlPackageError, match="exit=1"):
+        ex.extract(_conn(), _tok(), tmp_path / "x.dacpac")

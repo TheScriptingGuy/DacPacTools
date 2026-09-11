@@ -21,7 +21,7 @@ log = get_logger("dacfx_service")
 
 
 def _clr_types() -> tuple[Any, Any, Any, Any]:
-    from Microsoft.SqlServer.Dac.Model import (  # type: ignore  # noqa: PLC0415
+    from Microsoft.SqlServer.Dac.Model import (  # type: ignore
         DacQueryScopes,
         ModelSchema,
         ObjectIdentifier,
@@ -59,11 +59,11 @@ class DacFxDacPacService:
         return DacPacHandle(model=model, source_path=None)
 
     def load_from_live(self, connection: LiveConnection, tmp_dir: Path) -> DacPacHandle:
-        from dacpactools.application.ports._handles import AccessToken  # noqa: PLC0415
-        from dacpactools.infrastructure.azure.token_provider import (  # noqa: PLC0415
+        from dacpactools.application.ports._handles import AccessToken
+        from dacpactools.infrastructure.azure.token_provider import (
             DefaultAzureCredentialTokenProvider,
         )
-        from dacpactools.infrastructure.sqlpackage.extractor import SqlPackageExtractor  # noqa: PLC0415
+        from dacpactools.infrastructure.sqlpackage.extractor import SqlPackageExtractor
 
         tmp_dir.mkdir(parents=True, exist_ok=True)
         target = tmp_dir / f"{connection.server.replace('.', '_')}__{connection.database}.dacpac"
@@ -96,7 +96,7 @@ class DacFxDacPacService:
                 yield TSqlObjectHandle(ref=resolved, tsql_object=obj)
 
     def find_object(self, handle: DacPacHandle, ref: ObjectRef) -> TSqlObjectHandle | None:
-        _, ModelSchema, DacQueryScopes, ObjectIdentifier = _clr_types()
+        _, _ModelSchema, DacQueryScopes, ObjectIdentifier = _clr_types()
         candidates = [ref.object_type] if ref.object_type is not ObjectType.UNKNOWN else [
             ObjectType.PROCEDURE,
             ObjectType.VIEW,

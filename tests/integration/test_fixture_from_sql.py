@@ -11,8 +11,8 @@ pytestmark = pytest.mark.dotnet
 
 
 def test_build_fixture_and_run_lineage(tmp_path: Path, clr_initialized: None) -> None:
-    from Microsoft.SqlServer.Dac import DacPackageExtensions, PackageMetadata  # type: ignore  # noqa: PLC0415
-    from Microsoft.SqlServer.Dac.Model import (  # type: ignore  # noqa: PLC0415
+    from Microsoft.SqlServer.Dac import DacPackageExtensions, PackageMetadata  # type: ignore
+    from Microsoft.SqlServer.Dac.Model import (  # type: ignore
         SqlServerVersion,
         TSqlModel,
         TSqlModelOptions,
@@ -46,7 +46,7 @@ def test_build_fixture_and_run_lineage(tmp_path: Path, clr_initialized: None) ->
     assert result.exit_code == 0, result.output
 
     # Should trace through the CTE + view to base tables.
-    import json  # noqa: PLC0415
+    import json
 
     payload = json.loads(next((tmp_path / "out").glob("lineage_*.json")).read_text())
     tree = payload["run"]["facets"]["dacpactools_tree"]

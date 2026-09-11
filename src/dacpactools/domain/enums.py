@@ -138,7 +138,7 @@ class SqlTargetPlatform(str, Enum):
         return True
 
     @classmethod
-    def from_engine_edition(cls, engine_edition: int | None) -> "SqlTargetPlatform":
+    def from_engine_edition(cls, engine_edition: int | None) -> SqlTargetPlatform:
         return _ENGINE_EDITION_MAP.get(engine_edition or -1, cls.UNKNOWN)
 
 

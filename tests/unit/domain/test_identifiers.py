@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 from dacpactools.domain.enums import ObjectType
@@ -34,7 +36,7 @@ def test_parse_invalid() -> None:
 
 def test_frozen_hashable() -> None:
     ref = ObjectRef.parse("dbo.T", object_type=ObjectType.TABLE)
-    with pytest.raises(Exception):
+    with pytest.raises(FrozenInstanceError):
         ref.name = "other"  # type: ignore[misc]
     d = {ref: 1}
     assert d[ref] == 1

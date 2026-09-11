@@ -15,7 +15,7 @@ pytestmark = pytest.mark.dotnet
 @pytest.fixture
 def sample_dacpac(tmp_path: Path, tsql_model: Any) -> Path:
     """Build a real .dacpac fixture from an in-memory TSqlModel."""
-    from Microsoft.SqlServer.Dac import DacPackageExtensions, PackageMetadata  # type: ignore  # noqa: PLC0415
+    from Microsoft.SqlServer.Dac import DacPackageExtensions, PackageMetadata  # type: ignore
 
     tsql_model.AddObjects("CREATE TABLE dbo.Fact (id int, amt decimal(10,2))")
     tsql_model.AddObjects("CREATE VIEW dbo.v_Fact AS SELECT id, amt FROM dbo.Fact")

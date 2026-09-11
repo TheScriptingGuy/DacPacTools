@@ -70,7 +70,7 @@ def joins(
         result = use_case.execute(
             FindJoinsRequest(target=target, source=source, output_dir=output_dir)
         )
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         log.exception("joins scan failed", err=str(e))
         click.echo(f"error: {type(e).__name__}: {e}", err=True)
         sys.exit(1)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Protocol, runtime_checkable
 
 
@@ -11,6 +11,5 @@ class IClock(Protocol):
 
 class SystemClock:
     def now_utc(self) -> datetime:
-        from datetime import timezone
 
-        return datetime.now(timezone.utc)
+        return datetime.now(UTC)

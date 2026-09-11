@@ -19,7 +19,6 @@ from dacpactools.domain.identifiers import ColumnRef, ObjectRef
 from dacpactools.domain.physical_design import ExistingIndex, ExistingStatistic
 from dacpactools.presentation.logging_config import get_logger
 
-
 _SQL_TYPE_TO_OBJECT_TYPE: dict[str, ObjectType] = {
     "U": ObjectType.TABLE,
     "V": ObjectType.VIEW,
@@ -53,8 +52,8 @@ log = get_logger("sqlclient")
 
 
 def _clr_types() -> tuple[Any, Any]:
-    from Microsoft.Data.SqlClient import SqlConnection  # type: ignore  # noqa: PLC0415
-    from System.Data import CommandBehavior  # type: ignore  # noqa: PLC0415
+    from Microsoft.Data.SqlClient import SqlConnection  # type: ignore
+    from System.Data import CommandBehavior  # type: ignore
 
     return SqlConnection, CommandBehavior
 
@@ -175,9 +174,8 @@ class SqlClientMetadataService:
         if platform in {
             SqlTargetPlatform.SYNAPSE_SERVERLESS_POOL,
             SqlTargetPlatform.SYNAPSE_DEDICATED_POOL,
-        }:
-            if self._is_fabric_warehouse(conn):
-                platform = SqlTargetPlatform.FABRIC_WAREHOUSE
+        } and self._is_fabric_warehouse(conn):
+            platform = SqlTargetPlatform.FABRIC_WAREHOUSE
         log.info("target platform detected", edition=edition, platform=platform.value)
         return platform
 

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from dacpactools.application.dto.lineage_request import (
     BuildLineageRequest,
@@ -23,9 +24,8 @@ from dacpactools.application.ports.scriptdom_parser import IScriptDomParser
 from dacpactools.application.ports.sql_metadata_service import ISqlMetadataService
 from dacpactools.application.ports.token_provider import ITokenProvider
 from dacpactools.application.ports.viz_renderer import IVizRenderer
-from dacpactools.domain.enums import EdgeKind, ObjectType
+from dacpactools.domain.enums import ObjectType
 from dacpactools.domain.errors import UnresolvableObject
-from dacpactools.domain.identifiers import ObjectRef
 from dacpactools.domain.lineage import (
     ColumnMapping,
     ColumnUsage,
@@ -196,4 +196,4 @@ def _now(clock: IClock) -> datetime:
     try:
         return clock.now_utc()
     except Exception:  # noqa: BLE001
-        return datetime.now(timezone.utc)
+        return datetime.now(UTC)

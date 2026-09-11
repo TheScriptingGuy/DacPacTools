@@ -28,7 +28,6 @@ from dacpactools.domain.enums import (
     IndexKind,
     ObjectType,
     SqlTargetPlatform,
-    StatisticKind,
     SynapseDistributionKind,
 )
 from dacpactools.domain.identifiers import ColumnRef, ObjectRef
@@ -36,8 +35,6 @@ from dacpactools.domain.joins import JoinUsage
 from dacpactools.domain.physical_design import (
     ColumnLiveMetric,
     ColumnUsageProfile,
-    ExistingIndex,
-    ExistingStatistic,
     IndexRecommendation,
     StatisticRecommendation,
     TableRecommendation,
@@ -322,7 +319,7 @@ class RecommendIndexStatsUseCase:
         recs: list[TableRecommendation],
         platform: SqlTargetPlatform,
         request: RecommendIndexStatsRequest,
-    ) -> dict[str, "Any"]:
+    ) -> dict[str, Any]:
         ts = self.clock.now_utc().strftime("%Y%m%dT%H%M%SZ")
         sql_path = request.output_dir / f"recommend_index_stats_{ts}.sql"
         md_path = request.output_dir / f"recommend_index_stats_{ts}.md"
@@ -607,7 +604,7 @@ def _render_markdown(
     ts: str,
 ) -> str:
     lines: list[str] = [
-        f"# Index & Statistics Recommendations",
+        "# Index & Statistics Recommendations",
         "",
         f"- Generated: `{ts}`",
         f"- Target platform: **{platform.value}**",

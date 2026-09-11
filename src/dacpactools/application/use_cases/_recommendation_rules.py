@@ -540,7 +540,7 @@ def _cluster_by_verification_queries(
         "-- distinct counts on candidate CLUSTER BY columns (mid-high cardinality is best)\n"
         + "SELECT "
         + ", ".join(f"COUNT_BIG(DISTINCT [{c}]) AS distinct_{c}" for c in columns)
-        + f", COUNT_BIG(*) AS total_rows\n"
+        + ", COUNT_BIG(*) AS total_rows\n"
         + f"FROM [{table.schema_name}].[{table.name}];"
     )
     q_existing = (

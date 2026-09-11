@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 
@@ -20,7 +20,7 @@ def test_token_provider_returns_domain_access_token() -> None:
         token = provider.get_token()
 
     assert token.token == "fake-jwt"
-    assert token.expires_on == datetime.fromtimestamp(1_800_000_000, tz=timezone.utc)
+    assert token.expires_on == datetime.fromtimestamp(1_800_000_000, tz=UTC)
     fake_cred.get_token.assert_called_once_with("https://database.windows.net/.default")
 
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dacpactools.domain.enums import ColumnUsageKind, EdgeKind, ObjectType
@@ -54,7 +54,7 @@ def test_writes_openlineage_json_with_tree_facet(tmp_path: Path) -> None:
         edges=(LineageEdge(from_ref=view, to_ref=tbl, kind=EdgeKind.REFERENCES),),
     )
 
-    clock = FrozenClock(datetime(2026, 9, 2, 12, 0, 0, tzinfo=timezone.utc))
+    clock = FrozenClock(datetime(2026, 9, 2, 12, 0, 0, tzinfo=UTC))
     writer = OpenLineageJsonWriter(namespace="mssql://server/db", clock=clock)
     path = writer.write(graph, tmp_path)
 

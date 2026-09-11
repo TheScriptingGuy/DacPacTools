@@ -699,5 +699,5 @@ def _single_matching_binding(
     return None
 
 
-def b_stmts(batch: Any):  # noqa: ANN201
+def b_stmts(batch: Any):
     return batch.Statements

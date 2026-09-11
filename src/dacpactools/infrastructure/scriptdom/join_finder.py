@@ -39,7 +39,7 @@ def _get_visitor_class() -> Any:
     global _VISITOR_CLASS
     if _VISITOR_CLASS is not None:
         return _VISITOR_CLASS
-    from Microsoft.SqlServer.TransactSql.ScriptDom import (  # type: ignore  # noqa: PLC0415
+    from Microsoft.SqlServer.TransactSql.ScriptDom import (  # type: ignore
         TSqlFragmentVisitor,
     )
 
@@ -52,7 +52,7 @@ def _get_visitor_class() -> Any:
             self.target: ObjectRef | None = None
             self.out: list[JoinUsage] | None = None
 
-        def Visit(self, node):  # noqa: N802
+        def Visit(self, node):
             if type_name(node) == "QualifiedJoin" and self.out is not None:
                 _emit_join(node, self.consumer, self.target, self.out)  # type: ignore[arg-type]
 
@@ -260,6 +260,23 @@ def _keys_for(t: _NamedTable) -> set[str]:
         keys.add(t.alias.lower())
     keys.add(t.ref.name.lower())
     return keys
+
+
+def _assign_pair(
+    left: tuple[str | None, str],
+    right: tuple[str | None, str],
+    tgt_keys: set[str],
+    other_keys: set[str],
+) -> JoinPair | None:
+    l_prefix, l_col = left
+    r_prefix, r_col = right
+    lp = (l_prefix or "").lower()
+    rp = (r_prefix or "").lower()
+    if lp in tgt_keys and rp in other_keys and rp not in tgt_keys:
+        return JoinPair(target_column=l_col, other_column=r_col)
+    if rp in tgt_keys and lp in other_keys and lp not in tgt_keys:
+        return JoinPair(target_column=r_col, other_column=l_col)
+    return None
 
 
 def _assign_pair_with_other(

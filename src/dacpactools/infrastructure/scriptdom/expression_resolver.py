@@ -17,7 +17,7 @@ class TableBinding:
 class QueryScope:
     """Scope of a single QuerySpecification: alias -> binding."""
     bindings: dict[str, TableBinding] = field(default_factory=dict)
-    parent: "QueryScope | None" = None
+    parent: QueryScope | None = None
 
     def add(self, binding: TableBinding) -> None:
         self.bindings[binding.alias.lower()] = binding

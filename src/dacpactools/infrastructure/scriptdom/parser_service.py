@@ -15,8 +15,8 @@ log = get_logger("scriptdom_parser")
 
 
 def _clr_types() -> tuple[Any, Any]:
-    from Microsoft.SqlServer.TransactSql.ScriptDom import TSql160Parser  # type: ignore  # noqa: PLC0415
-    from System.IO import StringReader  # type: ignore  # noqa: PLC0415
+    from Microsoft.SqlServer.TransactSql.ScriptDom import TSql160Parser  # type: ignore
+    from System.IO import StringReader  # type: ignore
 
     return TSql160Parser, StringReader
 
